@@ -29,8 +29,17 @@ public class LoginController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
 
-            loginJson.setLogin(StringUtil.getOnlyNumbers(loginJson.getLogin()));
-            Anunciante anunciante = anuncianteService.getAnuncianteByCpf(loginJson.getLogin());
+            if (!StringUtil.isCNPJCPFValido(loginJson.getLogin()) && !StringUtil.isEmailValido(loginJson.getLogin())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
+            Anunciante anunciante = null;
+            if (StringUtil.isEmailValido(loginJson.getLogin())) {
+                anunciante = anuncianteService.getAnuncianteByEmail(loginJson.getLogin());
+            } else {
+                loginJson.setLogin(StringUtil.getOnlyNumbers(loginJson.getLogin()));
+                anunciante = anuncianteService.getAnuncianteByCpf(loginJson.getLogin());
+            }
 
             if (anunciante == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
