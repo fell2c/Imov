@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home } from 'lucide-react';
+import { FaFacebook, FaInstagram } from "react-icons/fa";
 
 export const Footer: React.FC = () => {
   return (
@@ -12,15 +13,34 @@ export const Footer: React.FC = () => {
               <span className="text-xl font-bold">Imov</span>
             </div>
             <p className="text-gray-400 text-sm">
-              Sua plataforma completa para encontrar o imóvel perfeito.
+              A plataforma completa para encontrar o seu imóvel perfeito.
             </p>
           </div>
           <div>
-            <h3 className="font-semibold mb-4">Comprar</h3>
+            <h3 className="font-semibold mb-4 text-center">Sociais</h3>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li><button className="hover:text-sky-400">Apartamentos</button></li>
+              <div className="flex justify-center items-center gap-4">
+                <a
+                  href="https://facebook.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-sky-400 transition"
+                >
+                  <FaFacebook className="w-6 h-6" />
+                </a>
+
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-sky-400 transition"
+                >
+                  <FaInstagram className="w-6 h-6" />
+                </a>
+              </div>
+              {/* <li><button className="hover:text-sky-400">Apartamentos</button></li>
               <li><button className="hover:text-sky-400">Casas</button></li>
-              <li><button className="hover:text-sky-400">Terrenos</button></li>
+              <li><button className="hover:text-sky-400">Terrenos</button></li> */}
             </ul>
           </div>
           <div>
@@ -36,7 +56,6 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 text-sm text-gray-400">
               <li>contato@imov.com.br</li>
               <li>(11) 9999-9999</li>
-              <li>São Paulo, SP</li>
             </ul>
           </div>
         </div>
