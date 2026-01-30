@@ -1,5 +1,6 @@
 package nle.co.Imov.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -56,6 +57,7 @@ public class Anunciante {
     @Column(name = "PAIS", nullable = false, length = 2)
     private String pais;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "SENHA", nullable = false, length = 255)
     private String senha;
 

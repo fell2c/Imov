@@ -2,20 +2,28 @@ package nle.co.Imov.controller;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import nle.co.Imov.crudFile.AnuncianteCrud;
 import nle.co.Imov.model.Anunciante;
 import nle.co.Imov.service.AnuncianteService;
+import nle.co.Imov.service.JwtService;
 import nle.co.Imov.util.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class LoginController {
 
     private final AnuncianteService anuncianteService;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private AnuncianteCrud anuncianteCrud;
 
     public LoginController(AnuncianteService anuncianteService) {
         this.anuncianteService = anuncianteService;
@@ -46,7 +54,7 @@ public class LoginController {
             }
 
             if (PasswordUtil.compararSenhas(loginJson.getSenha(), anunciante.getSenha())) {
-                String token = JwtUtil.generateToken(anunciante.getCpfCnpj());
+                String token = jwtService.generateToken(anunciante.getCpfCnpj());
                 LoginRetornoJson loginRetornoJson = new LoginRetornoJson();
                 loginRetornoJson.setAccessToken(token);
                 loginRetornoJson.setAnunciante(anunciante);
@@ -114,5 +122,32 @@ public class LoginController {
         anuncianteService.salvar(anunciante);
 
         return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
+    /**
+     * Retorna os dados do usuário autenticado
+     * Endpoint protegido - requer JWT válido no header Authorization
+     * Exemplo: Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+     */
+    @CrossOrigin(origins = "*")
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+
+        Anunciante anunciante = null;
+        if (StringUtil.isEmailValido(userDetails.getUsername())) {
+            anunciante = anuncianteService.getAnuncianteByEmail(userDetails.getUsername());
+        } else {
+            anunciante = anuncianteService.getAnuncianteByCpf(userDetails.getUsername());
+        }
+
+        if (anunciante == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        return ResponseEntity.ok(anunciante);
     }
 }
