@@ -58,9 +58,28 @@ export interface PropertyCardProps {
 export interface HeaderProps {
   mobileMenuOpen: boolean;
   setMobileMenuOpen: (open: boolean) => void;
-  setCurrentPage: (page: 'home' | 'login') => void;
+  setCurrentPage: (page: PageType) => void;
 }
 
 export interface PageProps {
   setCurrentPage: (page: 'home' | 'login') => void;
 }
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export interface AuthContextType {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  isLoginModalOpen: boolean; 
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+  showLogin: () => void;
+  hideLogin: () => void;
+}
+
+export type PageType = 'home' | 'login' | 'my-ads' | 'profile';

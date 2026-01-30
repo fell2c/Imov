@@ -5,9 +5,13 @@ import { Footer } from '../components/Footer';
 import { SearchBar } from '../components/SearchBar';
 import { CategoryCard } from '../components/CategoryCard';
 import { PropertyCard } from '../components/PropertyCard';
-import type { PageProps, Property, Category } from '../types/Index';
+import type { Property, Category, PageType } from '../types/Index';
 
-export const HomePage: React.FC<PageProps> = ({ setCurrentPage }) => {
+interface HomePageProps {
+  setCurrentPage: (page: PageType) => void;
+}
+
+export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -112,7 +116,7 @@ export const HomePage: React.FC<PageProps> = ({ setCurrentPage }) => {
         setCurrentPage={setCurrentPage}
       />
 
-      <section className="bg-gradient-to-r from-sky-400 to-sky-600 text-white py-16">
+      <section className="bg-linear-to-r from-sky-400 to-sky-600 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Encontre o Imóvel dos Seus Sonhos
