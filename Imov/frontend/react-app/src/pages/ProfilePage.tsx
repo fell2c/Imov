@@ -18,9 +18,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
 
   // Estados para edição
   const [formData, setFormData] = useState({
-    name: user?.name || '',
+    name: user?.nome || '',
     email: user?.email || '',
-    phone: '(11) 99999-9999',
+    phone: user?.telefone || '',
     location: 'São Paulo, SP'
   });
 
@@ -32,7 +32,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
 
   const handleCancel = (): void => {
     setFormData({
-      name: user?.name || '',
+      name: user?.nome || '',
       email: user?.email || '',
       phone: '(11) 99999-9999',
       location: 'São Paulo, SP'
@@ -65,7 +65,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
                   <UserIcon className="w-16 h-16 text-sky-500" />
                 </div>
                 <div className="mb-2">
-                  <h2 className="text-2xl font-bold text-gray-800">{user?.name}</h2>
+                  <h2 className="text-2xl font-bold text-gray-800">{user?.nome}</h2>
                   <p className="text-gray-600">{user?.email}</p>
                 </div>
               </div>

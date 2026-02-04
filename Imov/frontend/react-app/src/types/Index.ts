@@ -67,8 +67,20 @@ export interface PageProps {
 
 export interface User {
   id: number;
-  name: string;
+  nome: string;
   email: string;
+  cpfCnpj: string;
+  telefone?: string;
+  tipoLocalizacao: string;
+  endereco?: string;
+  numeroEndereco?: string;
+  complemento?: string;
+  cep?: string;
+  bairro?: string;
+  cidade?: string;
+  uf?: string;
+  pais?: string;
+  saldo: number;
 }
 
 export interface AuthContextType {
@@ -80,6 +92,11 @@ export interface AuthContextType {
   logout: () => void;
   showLogin: () => void;
   hideLogin: () => void;
+}
+
+export interface LoginResponse {
+  accessToken: string;
+  anunciante: User;
 }
 
 export type PageType = 'home' | 'login' | 'my-ads' | 'profile';

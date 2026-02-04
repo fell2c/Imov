@@ -136,7 +136,6 @@ public class LoginController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-
         Anunciante anunciante = null;
         if (StringUtil.isEmailValido(userDetails.getUsername())) {
             anunciante = anuncianteService.getAnuncianteByEmail(userDetails.getUsername());

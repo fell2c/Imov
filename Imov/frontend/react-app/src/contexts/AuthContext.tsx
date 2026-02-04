@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { ReactNode } from 'react';
-import type { User, AuthContextType } from '../types/Index.ts';
-import { apiClient } from '../utils/Api.ts';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import type { ReactNode } from "react";
+import type { User, AuthContextType, LoginResponse } from "../types/Index.ts";
+import { apiClient } from "../utils/Api.ts";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -19,68 +19,68 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkAuth = async (): Promise<void> => {
     try {
-      const response = await apiClient('/auth/me');
+      const response = await apiClient("/me", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
 
       if (response.ok) {
         const userData: User = await response.json();
         setUser(userData);
-        console.log('✅ Usuário autenticado:', userData);
+        console.log("✅ Usuário autenticado:", userData);
       } else {
         setUser(null);
-        console.log('❌ Usuário NÃO autenticado');
+        console.log("❌ Usuário NÃO autenticado");
       }
     } catch (error) {
-      console.log('❌ Erro ao verificar autenticação:', error);
+      console.log("❌ Erro ao verificar autenticação:", error);
       setUser(null);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const login = async (email: string, password: string): Promise<void> => {
+  const login = async (login: string, senha: string): Promise<void> => {
     try {
-      const response = await apiClient('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
+      const response = await apiClient("/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ login, senha }),
       });
 
       if (!response.ok) {
         const error = await response.text();
-        throw new Error(error || 'Credenciais inválidas');
+        throw new Error(error || "Credenciais inválidas");
       }
 
-      const userData: User = await response.json();
-      setUser(userData);
-      console.log('✅ Login realizado com sucesso:', userData);
+      const data: LoginResponse = await response.json();
+
+      localStorage.setItem("accessToken", data.accessToken);
+      setUser(data.anunciante);
     } catch (error) {
-      console.error('❌ Erro no login:', error);
+      console.error("❌ Erro no login:", error);
       throw error;
     }
   };
 
   const logout = async (): Promise<void> => {
-    try {
-      await apiClient('/auth/logout', {
-        method: 'POST',
-      });
-      console.log('✅ Logout realizado');
-    } catch (error) {
-      console.error('❌ Erro no logout:', error);
-    } finally {
+      localStorage.removeItem("accessToken");
       setUser(null);
-      window.location.href = '/';
-    }
+      window.location.href = "/";
   };
 
   const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
     isLoading,
-    isLoginModalOpen: false, 
+    isLoginModalOpen: false,
     login,
     logout,
-    showLogin: () => {}, 
-    hideLogin: () => {}, 
+    showLogin: () => {},
+    hideLogin: () => {},
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -89,7 +89,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
+    throw new Error("useAuth deve ser usado dentro de um AuthProvider");
   }
   return context;
 };
