@@ -9,7 +9,6 @@ interface MyAdsPageProps {
   setCurrentPage: (page: PageType) => void;
 }
 
-// Interface para os anúncios (exemplo)
 interface Ad {
   id: number;
   title: string;
@@ -26,7 +25,6 @@ interface Ad {
 export const MyAdsPage: React.FC<MyAdsPageProps> = ({ setCurrentPage }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
-  // Mock de dados - substitua por chamada à API
   const [ads] = useState<Ad[]>([
     {
       id: 1,
@@ -68,7 +66,6 @@ export const MyAdsPage: React.FC<MyAdsPageProps> = ({ setCurrentPage }) => {
 
   const handleDeleteAd = (id: number): void => {
     if (window.confirm('Tem certeza que deseja excluir este anúncio?')) {
-      // Aqui você faria a chamada à API para deletar
       console.log('Deletar anúncio:', id);
     }
   };
@@ -100,7 +97,6 @@ export const MyAdsPage: React.FC<MyAdsPageProps> = ({ setCurrentPage }) => {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Cabeçalho */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -115,7 +111,6 @@ export const MyAdsPage: React.FC<MyAdsPageProps> = ({ setCurrentPage }) => {
           </Button>
         </div>
 
-        {/* Estatísticas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
@@ -158,7 +153,6 @@ export const MyAdsPage: React.FC<MyAdsPageProps> = ({ setCurrentPage }) => {
           </div>
         </div>
 
-        {/* Lista de Anúncios */}
         {ads.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-12 text-center">
             <Building2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -177,7 +171,6 @@ export const MyAdsPage: React.FC<MyAdsPageProps> = ({ setCurrentPage }) => {
             {ads.map((ad) => (
               <div key={ad.id} className="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden">
                 <div className="flex flex-col md:flex-row">
-                  {/* Imagem */}
                   <div className="md:w-64 h-48 md:h-auto">
                     <img
                       src={ad.image}
@@ -186,7 +179,6 @@ export const MyAdsPage: React.FC<MyAdsPageProps> = ({ setCurrentPage }) => {
                     />
                   </div>
 
-                  {/* Conteúdo */}
                   <div className="flex-1 p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
@@ -227,7 +219,6 @@ export const MyAdsPage: React.FC<MyAdsPageProps> = ({ setCurrentPage }) => {
                       </div>
                     </div>
 
-                    {/* Ações */}
                     <div className="flex gap-3">
                       <Button variant="primary" className="flex-1">
                         <Eye className="w-4 h-4" />

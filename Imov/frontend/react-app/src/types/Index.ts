@@ -99,4 +99,22 @@ export interface LoginResponse {
   anunciante: User;
 }
 
-export type PageType = 'home' | 'login' | 'my-ads' | 'profile';
+export interface RegisterFormData {
+  nome: string;
+  email: string;
+  cpfCnpj: string;
+  telefone: string;
+  tipoLocalizacao: string;
+  endereco: string;
+  numeroEndereco: string;
+  complemento: string;
+  cep: string;
+  bairro: string;
+  cidade: string;
+  uf: string;
+  pais: string;
+  senha: string;
+  confirmarSenha: string;
+}
+
+export type PageType = 'home' | 'login' | 'register' | 'my-ads' | 'profile';

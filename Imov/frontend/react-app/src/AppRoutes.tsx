@@ -5,6 +5,7 @@ import { LoginPage } from './pages/LoginPage';
 import { MyAdsPage } from './pages/MyAdsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import type { PageType } from './types/Index.ts';
+import { RegisterPage } from './pages/RegisterPage';
 
 export const AppRoutes: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -21,13 +22,11 @@ export const AppRoutes: React.FC = () => {
     );
   }
 
-  // Se tentar acessar página privada sem estar logado, vai para login
   if (!isAuthenticated && (currentPage === 'my-ads' || currentPage === 'profile')) {
     setTimeout(() => setCurrentPage('login'), 0);
     return null;
   }
 
-  // Renderiza a página atual
   if (currentPage === 'home') {
     return <HomePage setCurrentPage={setCurrentPage} />;
   }
@@ -42,6 +41,10 @@ export const AppRoutes: React.FC = () => {
 
   if (currentPage === 'profile' && isAuthenticated) {
     return <ProfilePage setCurrentPage={setCurrentPage} />;
+  }
+
+  if (currentPage === 'register') {
+    return <RegisterPage setCurrentPage={setCurrentPage} />;
   }
 
   return <HomePage setCurrentPage={setCurrentPage} />;

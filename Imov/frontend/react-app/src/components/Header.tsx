@@ -19,7 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const handleProtectedRoute = (page: PageType): void => {
     if (!isAuthenticated) {
-      setCurrentPage('login'); // Navega para página de login
+      setCurrentPage('login');
     } else {
       setCurrentPage(page);
     }
@@ -37,14 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="text-2xl font-bold text-sky-600">Imov</span>
           </button>
 
-          <nav className="hidden md:flex items-center gap-6">
-            <button 
-              onClick={() => setCurrentPage('home')}
-              className="text-gray-700 hover:text-sky-600 transition"
-            >
-              Início
-            </button>
-            
+          <nav className="hidden md:flex items-center gap-6">          
             <button 
               onClick={() => handleProtectedRoute('my-ads')}
               className="text-gray-700 hover:text-sky-600 transition flex items-center gap-1"
@@ -60,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({
                   className="flex items-center gap-2 text-sm text-gray-700 hover:text-sky-600 transition"
                 >
                   <UserCircle className="w-5 h-5" />
-                  {user?.name || 'Usuário'}
+                  {user?.nome || 'Usuário'}
                 </button>
                 <Button onClick={logout} variant="outline">
                   Sair
@@ -84,17 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-t">
-          <div className="px-4 py-3 space-y-3">
-            <button 
-              onClick={() => {
-                setCurrentPage('home');
-                setMobileMenuOpen(false);
-              }}
-              className="block text-gray-700 hover:text-sky-600 w-full text-left"
-            >
-              Início
-            </button>
-            
+          <div className="px-4 py-3 space-y-3">          
             <button 
               onClick={() => {
                 handleProtectedRoute('my-ads');
@@ -116,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   Perfil
                 </button>
-                <p className="text-sm text-gray-600">Olá, {user?.name || 'Usuário'}</p>
+                <p className="text-sm text-gray-600">Olá, {user?.nome || 'Usuário'}</p>
                 <Button onClick={logout} variant="outline" fullWidth>
                   Sair
                 </Button>

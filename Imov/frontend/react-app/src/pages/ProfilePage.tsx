@@ -16,7 +16,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  // Estados para edição
   const [formData, setFormData] = useState({
     name: user?.nome || '',
     email: user?.email || '',
@@ -25,7 +24,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
   });
 
   const handleSave = async (): Promise<void> => {
-    // Aqui você faria a chamada à API para atualizar o perfil
     console.log('Salvando perfil:', formData);
     setIsEditing(false);
   };
@@ -54,11 +52,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
         </h1>
 
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          {/* Header do Perfil */}
           <div className="bg-linear-to-r from-sky-400 to-sky-600 h-32"></div>
           
           <div className="px-6 pb-6">
-            {/* Avatar */}
             <div className="flex items-end justify-between -mt-16 mb-6">
               <div className="flex items-end gap-4">
                 <div className="w-32 h-32 bg-white rounded-full border-4 border-white shadow-lg flex items-center justify-center">
@@ -81,7 +77,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
               )}
             </div>
 
-            {/* Informações do Perfil */}
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -178,7 +173,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
                 )}
               </div>
 
-              {/* Seção de Segurança */}
               {!isEditing && (
                 <div className="pt-6 border-t">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">
