@@ -20,7 +20,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
     name: user?.nome || '',
     email: user?.email || '',
     phone: user?.telefone || '',
-    location: 'São Paulo, SP'
+    location: [user?.cidade, user?.uf].filter(Boolean).join(', ')
   });
 
   const handleSave = async (): Promise<void> => {
@@ -32,8 +32,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
     setFormData({
       name: user?.nome || '',
       email: user?.email || '',
-      phone: '(11) 99999-9999',
-      location: 'São Paulo, SP'
+      phone: user?.telefone || '',
+      location: [user?.cidade, user?.uf].filter(Boolean).join(', ')
     });
     setIsEditing(false);
   };
@@ -112,7 +112,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
                     <Input
                       label="Localização"
                       type="text"
-                      value={formData.location}
+                      value={formData.location ?? ''}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                       icon={Location}
                     />

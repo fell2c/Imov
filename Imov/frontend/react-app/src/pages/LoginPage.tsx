@@ -100,7 +100,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ setCurrentPage }) => {
                   Lembrar-me
                 </span>
               </div>
-              <button className="text-sm text-sky-600 hover:text-sky-700 transition cursor-pointer">
+              <button
+                onClick={() => setCurrentPage('forgot-password')}
+                className="text-sm text-sky-600 hover:text-sky-700 transition"
+              >
                 Esqueceu a senha?
               </button>
             </div>
@@ -119,7 +122,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ setCurrentPage }) => {
             <p className="text-gray-600">
               Não tem uma conta?{' '}
               <button
-                onClick={() => setCurrentPage('register')} 
+                onClick={() => setCurrentPage('register')}
                 className="text-sky-600 hover:text-sky-700 font-semibold transition cursor-pointer">
                 Cadastre-se gratuitamente
               </button>

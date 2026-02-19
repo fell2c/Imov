@@ -94,7 +94,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ setCurrentPage }) =>
     try {
       const { confirmarSenha, ...dataToSend } = formData;
 
-      const response = await apiClient('/auth/register', {
+      const response = await apiClient('/cadastrar-anunciante', {
         method: 'POST',
         body: JSON.stringify(dataToSend),
       });
@@ -138,10 +138,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ setCurrentPage }) =>
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side - Formulário de Cadastro */}
       <div className="flex-1 flex items-center justify-center p-8 bg-white overflow-y-auto">
         <div className="w-full max-w-lg">
-          {/* Logo clicável */}
           <button
             onClick={() => setCurrentPage('home')}
             className="flex items-center gap-2 mb-6 hover:opacity-80 transition"
@@ -164,7 +162,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ setCurrentPage }) =>
           )}
 
           <div className="space-y-5">
-            {/* Dados Pessoais */}
             <div>
               <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <User className="w-4 h-4 text-sky-500" />
@@ -222,7 +219,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ setCurrentPage }) =>
               </div>
             </div>
 
-            {/* Endereço */}
             <div>
               <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-sky-500" />
@@ -251,6 +247,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ setCurrentPage }) =>
                       type="text"
                       value={formData.cep}
                       onChange={(e) => handleChange('cep', e.target.value)}
+                      onBlur={handleCepBlur}
                       placeholder="00000-000"                    
                     />
                     {errors.cep && <p className="text-red-500 text-xs mt-1">{errors.cep}</p>}
@@ -328,7 +325,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ setCurrentPage }) =>
               </div>
             </div>
 
-            {/* Senha */}
             <div>
               <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <Lock className="w-4 h-4 text-sky-500" />
@@ -360,7 +356,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ setCurrentPage }) =>
               </div>
             </div>
 
-            {/* Botão Submit */}
             <Button
               onClick={handleSubmit}
               variant="primary"
@@ -383,7 +378,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ setCurrentPage }) =>
         </div>
       </div>
 
-      {/* Right Side - Branding/Benefícios */}
       <div className="hidden lg:flex flex-1 bg-linear-to-br from-sky-400 to-sky-600 items-center justify-center p-12">
         <div className="text-white max-w-md">
           <div className="mb-8">

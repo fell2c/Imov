@@ -29,14 +29,9 @@ export interface ButtonProps {
   type?: 'button' | 'submit' | 'reset';
 }
 
-export interface InputProps {
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement>{
   label?: string;
-  type?: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder?: string;
   icon?: React.ComponentType<{ className?: string }>;
-  className?: string; 
 }
 
 export interface SearchBarProps {
@@ -117,4 +112,4 @@ export interface RegisterFormData {
   confirmarSenha: string;
 }
 
-export type PageType = 'home' | 'login' | 'register' | 'my-ads' | 'profile';
+export type PageType = 'home' | 'login' | 'register' | 'forgot-password' | 'my-ads' | 'profile';

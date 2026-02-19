@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
               <span className="text-xl font-bold">Imov</span>
             </div>
             <p className="text-gray-400 text-sm">
-              A plataforma completa para encontrar o seu imóvel perfeito.
+              A plataforma completa para encontrar seu imóvel perfeito.
             </p>
           </div>
           <div>
@@ -38,22 +38,19 @@ export const Footer: React.FC = () => {
                   <FaInstagram className="w-6 h-6" />
                 </a>
               </div>
-              {/* <li><button className="hover:text-sky-400">Apartamentos</button></li>
-              <li><button className="hover:text-sky-400">Casas</button></li>
-              <li><button className="hover:text-sky-400">Terrenos</button></li> */}
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-4">Alugar</h3>
-            <ul className="space-y-2 text-sm text-gray-400">
+            <h3 className="font-semibold text-center mb-4">Alugar</h3>
+            <ul className="space-y-2 text-sm text-center text-gray-400">
               <li><button className="hover:text-sky-400">Residencial</button></li>
               <li><button className="hover:text-sky-400">Comercial</button></li>
-              <li><button className="hover:text-sky-400">Temporada</button></li>
+              <li><button className="hover:text-sky-400">Temporada</button></li> 
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-4">Contato</h3>
-            <ul className="space-y-2 text-sm text-gray-400">
+            <h3 className="font-semibold text-center mb-4">Contato</h3>
+            <ul className="space-y-2 text-sm text-center text-gray-400">
               <li>contato@imov.com.br</li>
               <li>(11) 9999-9999</li>
             </ul>

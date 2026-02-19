@@ -6,6 +6,7 @@ import { MyAdsPage } from './pages/MyAdsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import type { PageType } from './types/Index.ts';
 import { RegisterPage } from './pages/RegisterPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 
 export const AppRoutes: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -45,6 +46,10 @@ export const AppRoutes: React.FC = () => {
 
   if (currentPage === 'register') {
     return <RegisterPage setCurrentPage={setCurrentPage} />;
+  }
+
+  if (currentPage === 'forgot-password') {
+    return <ForgotPasswordPage setCurrentPage={setCurrentPage} />;
   }
 
   return <HomePage setCurrentPage={setCurrentPage} />;
