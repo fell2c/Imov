@@ -23,39 +23,28 @@ public class SecurityConfig {
     private CorsConfigurationSource corsConfigurationSource;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http,
-            JwtAuthenticationFilter jwtAuthFilter
-    ) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthFilter) throws Exception {
         http
-            // Configuração CORS
-            .cors(cors -> cors.configurationSource(corsConfigurationSource))
-            
-            // Desabilita CSRF (não é necessário com JWT)
-            .csrf(csrf -> csrf.disable())
-            
-            // Configuração de sessão STATELESS (sem sessão no servidor)
-            .sessionManagement(session -> 
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            
-            // Configuração de autorização de requisições
-            .authorizeHttpRequests(auth -> auth
-                // Endpoints públicos (não precisam de autenticação)
-                .requestMatchers(
-                    "/login",
-                    "/enviar-codigo-recuperacao",
-                    "/alterar-senha",
-                    "/cadastrar-anunciante",  // Permite cadastro
-                    "/error"
-                ).permitAll()
-                
-                // Todas as outras rotas precisam de autenticação
-                .anyRequest().authenticated()
-            )
-            
-            // Adiciona o filtro JWT antes do filtro de autenticação padrão
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                // Configuração CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+
+                // Desabilita CSRF (não é necessário com JWT)
+                .csrf(csrf -> csrf.disable())
+
+                // Configuração de sessão STATELESS (sem sessão no servidor)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // Configuração de autorização de requisições
+                .authorizeHttpRequests(auth -> auth
+                        // Endpoints públicos (não precisam de autenticação)
+                        .requestMatchers("/login", "/enviar-codigo-recuperacao", "/alterar-senha", "/cadastrar-anunciante",  // Permite cadastro
+                                "/error").permitAll()
+
+                        // Todas as outras rotas precisam de autenticação
+                        .anyRequest().authenticated())
+
+                // Adiciona o filtro JWT antes do filtro de autenticação padrão
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -66,9 +55,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config
-    ) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 }

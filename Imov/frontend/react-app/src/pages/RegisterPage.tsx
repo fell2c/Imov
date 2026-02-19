@@ -94,7 +94,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ setCurrentPage }) =>
     try {
       const { confirmarSenha, ...dataToSend } = formData;
 
-      const response = await apiClient('/auth/register', {
+      const response = await apiClient('/cadastrar-anunciante', {
         method: 'POST',
         body: JSON.stringify(dataToSend),
       });
