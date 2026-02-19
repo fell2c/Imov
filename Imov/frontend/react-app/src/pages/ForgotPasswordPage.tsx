@@ -32,7 +32,7 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
     setIsLoading(true);
 
     try {
-      const response = await apiClient('/auth/forgot-password', {
+      const response = await apiClient('/enviar-codigo-recuperacao', {
         method: 'POST',
         body: JSON.stringify({ email }),
       });
