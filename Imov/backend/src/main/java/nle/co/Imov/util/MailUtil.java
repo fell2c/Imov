@@ -17,7 +17,7 @@ public class MailUtil {
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "465");
 
-        props.put("mail.smtp.socketFactory.class", "com.projetoFuturo.util.DummySSLSocketFactory");
+        props.put("mail.smtp.socketFactory.class", "nle.co.Imov.util.DummySSLSocketFactory");
         props.put("mail.smtp.socketFactory.fallback", "false");
 
         Session session = Session.getInstance(props, new Authenticator() {
@@ -33,7 +33,7 @@ public class MailUtil {
             message.setSubject(assunto);
             message.setText(mensagem);
             Transport.send(message);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
