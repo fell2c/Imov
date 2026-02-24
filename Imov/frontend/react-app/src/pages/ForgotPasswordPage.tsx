@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Home, Mail, ArrowLeft, CheckCircle, Lock, Shield, HelpCircle, Key } from 'lucide-react';
 import { Input } from '../components/Input';
@@ -15,12 +16,13 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
   const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState<string>('');
   const [code, setCode] = useState<string>('');
+  const [storedToken, setStoredToken] = useState<string>(''); // Token retornado pelo backend
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Passo 1: Enviar email com código
+  // Passo 1: Enviar email com código e ARMAZENAR o token
   const handleSendCode = async (): Promise<void> => {
     setError('');
 
@@ -48,7 +50,17 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
         throw new Error(errorText || 'Erro ao enviar código');
       }
 
-      // Código enviado com sucesso
+      const data = await response.json();
+      const tokenRecebido = data;
+      
+      if (!tokenRecebido) {
+        throw new Error('Código não foi retornado pelo servidor');
+      }
+      
+      setStoredToken(tokenRecebido);
+      console.log('✅ Código armazenado:', tokenRecebido); 
+      
+      // Avança para a próxima etapa
       setStep('code');
     } catch (err: any) {
       setError(err.message || 'Erro ao enviar código. Tente novamente.');
@@ -57,8 +69,7 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
     }
   };
 
-  // Passo 2: Validar código
-  const handleValidateCode = async (): Promise<void> => {
+  const handleValidateCode = (): void => {
     setError('');
 
     if (!code.trim()) {
@@ -66,34 +77,19 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
       return;
     }
 
-    if (code.length !== 6) {
-      setError('O código deve ter 6 dígitos');
+    if (code.length !== 8) {
+      setError('O código deve ter 8 dígitos');
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      const response = await apiClient('/auth/validate-code', {
-        method: 'POST',
-        body: JSON.stringify({ email, code }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Código inválido');
-      }
-
-      // Código válido
-      setStep('password');
-    } catch (err: any) {
-      setError(err.message || 'Código inválido ou expirado');
-    } finally {
-      setIsLoading(false);
+    if (code != storedToken) {
+      setError('Código inválido. Verifique e tente novamente.');
+      return;
     }
+
+    setStep('password');
   };
 
-  // Passo 3: Redefinir senha
   const handleResetPassword = async (): Promise<void> => {
     setError('');
 
@@ -115,9 +111,13 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
     setIsLoading(true);
 
     try {
-      const response = await apiClient('/auth/reset-password', {
+      const response = await apiClient('/alterar-senha', {
         method: 'POST',
-        body: JSON.stringify({ email, code, newPassword }),
+        body: JSON.stringify({ 
+          email, 
+          codigo: storedToken, 
+          novaSenha: newPassword 
+        }),
       });
 
       if (!response.ok) {
@@ -125,7 +125,8 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
         throw new Error(errorText || 'Erro ao redefinir senha');
       }
 
-      // Senha redefinida com sucesso
+      console.log('✅ Senha alterada com sucesso!'); 
+
       setStep('success');
     } catch (err: any) {
       setError(err.message || 'Erro ao redefinir senha. Tente novamente.');
@@ -142,10 +143,8 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side - Formulário */}
       <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md">
-          {/* Logo clicável */}
           <button
             onClick={() => setCurrentPage('home')}
             className="flex items-center gap-2 mb-8 hover:opacity-80 transition"
@@ -154,7 +153,6 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
             <span className="text-3xl font-bold text-sky-600">Imov</span>
           </button>
 
-          {/* Passo 1: Digitar Email */}
           {step === 'email' && (
             <>
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -202,7 +200,6 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
             </>
           )}
 
-          {/* Passo 2: Validar Código */}
           {step === 'code' && (
             <>
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -223,8 +220,7 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
                   label="Código de Verificação"
                   type="text"
                   value={code}
-                  onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  placeholder="000000"
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 8))}                
                   icon={Key}
                 />
 
@@ -234,13 +230,17 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
                   fullWidth 
                   className="py-3 text-lg"
                 >
-                  {isLoading ? 'Validando...' : 'Validar Código'}
+                  Validar Código
                 </Button>
               </div>
 
               <div className="mt-6 space-y-3">
                 <button
-                  onClick={() => setStep('email')}
+                  onClick={() => {
+                    setStep('email');
+                    setCode('');
+                    setError('');
+                  }}
                   className="flex items-center gap-2 text-sky-600 hover:text-sky-700 transition font-semibold"
                 >
                   <ArrowLeft className="w-4 h-4" />
@@ -248,8 +248,13 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
                 </button>
 
                 <button
-                  onClick={handleSendCode}
+                  onClick={() => {
+                    setCode('');
+                    setError('');
+                    handleSendCode();
+                  }}
                   className="text-sm text-gray-600 hover:text-sky-600 transition"
+                  disabled={isLoading}
                 >
                   Não recebeu o código? <span className="font-semibold">Reenviar</span>
                 </button>
@@ -271,7 +276,6 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
             </>
           )}
 
-          {/* Passo 3: Nova Senha */}
           {step === 'password' && (
             <>
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -334,7 +338,6 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
             </>
           )}
 
-          {/* Passo 4: Sucesso */}
           {step === 'success' && (
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
@@ -386,13 +389,13 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
             </div>
 
             <div className="flex items-start gap-4">
-              <div className={`${step === 'code' || step === 'password' || step === 'success' ? 'bg-white text-sky-600' : 'bg-white/20 text-white'} p-3 rounded-lg backdrop-blur-sm flex-shrink-0 font-bold`}>
+              <div className={`${step === 'code' || step === 'password' || step === 'success' ? 'bg-white text-sky-600' : 'bg-white/20 text-white'} p-3 rounded-lg backdrop-blur-sm shrink-0 font-bold`}>
                 2
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Validar Código</h3>
                 <p className="text-sm text-sky-50">
-                  Insira o código de 6 dígitos enviado por email
+                  Insira o código de 8 dígitos enviado por email
                 </p>
               </div>
             </div>
@@ -404,19 +407,7 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
               <div>
                 <h3 className="font-semibold text-lg mb-1">Nova Senha</h3>
                 <p className="text-sm text-sky-50">
-                  Defina uma nova senha segura para sua conta
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 p-6 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20">
-            <div className="flex items-start gap-3 mb-4">
-              <Shield className="w-6 h-6 shrink-0" />
-              <div>
-                <h3 className="font-semibold text-lg mb-1">Segurança Garantida</h3>
-                <p className="text-sm text-sky-50">
-                  Códigos válidos por apenas 15 minutos e podem ser usados uma única vez
+                  Defina uma nova senha
                 </p>
               </div>
             </div>
