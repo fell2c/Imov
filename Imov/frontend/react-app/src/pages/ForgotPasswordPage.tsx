@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Mail, ArrowLeft, CheckCircle, Lock, Shield, HelpCircle } from 'lucide-react';
+import { Home, Mail, ArrowLeft, CheckCircle, Lock, Shield, HelpCircle, Key } from 'lucide-react';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import type { PageType } from '../types/Index';
@@ -9,13 +9,19 @@ interface ForgotPasswordPageProps {
   setCurrentPage: (page: PageType) => void;
 }
 
+type Step = 'email' | 'code' | 'password' | 'success';
+
 export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurrentPage }) => {
+  const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState<string>('');
+  const [code, setCode] = useState<string>('');
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [emailSent, setEmailSent] = useState<boolean>(false);
 
-  const handleSubmit = async (): Promise<void> => {
+  // Passo 1: Enviar email com código
+  const handleSendCode = async (): Promise<void> => {
     setError('');
 
     if (!email.trim()) {
@@ -39,27 +45,107 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || 'Erro ao enviar email');
+        throw new Error(errorText || 'Erro ao enviar código');
       }
 
-      setEmailSent(true);
+      // Código enviado com sucesso
+      setStep('code');
     } catch (err: any) {
-      setError(err.message || 'Erro ao enviar email. Tente novamente.');
+      setError(err.message || 'Erro ao enviar código. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent): void => {
-    if (e.key === 'Enter' && !emailSent) {
-      handleSubmit();
+  // Passo 2: Validar código
+  const handleValidateCode = async (): Promise<void> => {
+    setError('');
+
+    if (!code.trim()) {
+      setError('Por favor, insira o código');
+      return;
+    }
+
+    if (code.length !== 6) {
+      setError('O código deve ter 6 dígitos');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await apiClient('/auth/validate-code', {
+        method: 'POST',
+        body: JSON.stringify({ email, code }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Código inválido');
+      }
+
+      // Código válido
+      setStep('password');
+    } catch (err: any) {
+      setError(err.message || 'Código inválido ou expirado');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Passo 3: Redefinir senha
+  const handleResetPassword = async (): Promise<void> => {
+    setError('');
+
+    if (!newPassword) {
+      setError('Digite a nova senha');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setError('A senha deve ter no mínimo 6 caracteres');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError('As senhas não conferem');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await apiClient('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({ email, code, newPassword }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Erro ao redefinir senha');
+      }
+
+      // Senha redefinida com sucesso
+      setStep('success');
+    } catch (err: any) {
+      setError(err.message || 'Erro ao redefinir senha. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent, action: () => void): void => {
+    if (e.key === 'Enter') {
+      action();
     }
   };
 
   return (
     <div className="min-h-screen flex">
+      {/* Left Side - Formulário */}
       <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md">
+          {/* Logo clicável */}
           <button
             onClick={() => setCurrentPage('home')}
             className="flex items-center gap-2 mb-8 hover:opacity-80 transition"
@@ -68,13 +154,14 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
             <span className="text-3xl font-bold text-sky-600">Imov</span>
           </button>
 
-          {!emailSent ? (
+          {/* Passo 1: Digitar Email */}
+          {step === 'email' && (
             <>
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
                 Esqueceu sua senha?
               </h1>
               <p className="text-gray-600 mb-8">
-                Não se preocupe! Digite seu email e enviaremos instruções para redefinir sua senha.
+                Digite seu email e enviaremos um código de verificação.
               </p>
 
               {error && (
@@ -83,7 +170,7 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
                 </div>
               )}
 
-              <div className="space-y-6" onKeyPress={handleKeyPress}>
+              <div className="space-y-6" onKeyPress={(e) => handleKeyPress(e, handleSendCode)}>
                 <Input
                   label="Email"
                   type="email"
@@ -94,12 +181,12 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
                 />
 
                 <Button 
-                  onClick={handleSubmit} 
+                  onClick={handleSendCode} 
                   variant="primary" 
                   fullWidth 
                   className="py-3 text-lg"
                 >
-                  {isLoading ? 'Enviando...' : 'Enviar Link de Recuperação'}
+                  {isLoading ? 'Enviando...' : 'Enviar Código'}
                 </Button>
               </div>
 
@@ -112,81 +199,169 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
                   Voltar para o login
                 </button>
               </div>
+            </>
+          )}
+
+          {/* Passo 2: Validar Código */}
+          {step === 'code' && (
+            <>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                Verifique seu Email
+              </h1>
+              <p className="text-gray-600 mb-8">
+                Enviamos um código de 6 dígitos para <strong>{email}</strong>
+              </p>
+
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-600 text-sm">{error}</p>
+                </div>
+              )}
+
+              <div className="space-y-6" onKeyPress={(e) => handleKeyPress(e, handleValidateCode)}>
+                <Input
+                  label="Código de Verificação"
+                  type="text"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder="000000"
+                  icon={Key}
+                />
+
+                <Button 
+                  onClick={handleValidateCode} 
+                  variant="primary" 
+                  fullWidth 
+                  className="py-3 text-lg"
+                >
+                  {isLoading ? 'Validando...' : 'Validar Código'}
+                </Button>
+              </div>
+
+              <div className="mt-6 space-y-3">
+                <button
+                  onClick={() => setStep('email')}
+                  className="flex items-center gap-2 text-sky-600 hover:text-sky-700 transition font-semibold"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Voltar
+                </button>
+
+                <button
+                  onClick={handleSendCode}
+                  className="text-sm text-gray-600 hover:text-sky-600 transition"
+                >
+                  Não recebeu o código? <span className="font-semibold">Reenviar</span>
+                </button>
+              </div>
 
               <div className="mt-8 p-4 bg-sky-50 rounded-lg border border-sky-200">
                 <div className="flex items-start gap-3">
-                  <HelpCircle className="w-5 h-5 text-sky-600 flex-shrink-0 mt-0.5" />
+                  <HelpCircle className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
                   <div>
                     <h3 className="text-sm font-semibold text-gray-800 mb-1">
-                      Dica de Segurança
+                      Dica
                     </h3>
                     <p className="text-xs text-gray-600">
-                      Verifique sua caixa de spam caso não receba o email em alguns minutos.
+                      Verifique sua caixa de spam caso não encontre o email.
                     </p>
                   </div>
                 </div>
               </div>
             </>
-          ) : (
+          )}
+
+          {/* Passo 3: Nova Senha */}
+          {step === 'password' && (
             <>
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
-                  <CheckCircle className="w-8 h-8 text-green-600" />
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                Criar Nova Senha
+              </h1>
+              <p className="text-gray-600 mb-8">
+                Digite sua nova senha para {email}
+              </p>
+
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-600 text-sm">{error}</p>
                 </div>
+              )}
 
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                  Email Enviado!
-                </h1>
-                <p className="text-gray-600 mb-8">
-                  Enviamos um link de recuperação para <strong>{email}</strong>
-                </p>
+              <div className="space-y-6" onKeyPress={(e) => handleKeyPress(e, handleResetPassword)}>
+                <Input
+                  label="Nova Senha"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Mínimo 6 caracteres"
+                  icon={Lock}
+                />
 
-                <div className="bg-sky-50 rounded-lg p-6 mb-8 text-left">
-                  <h3 className="font-semibold text-gray-800 mb-3">Próximos passos:</h3>
-                  <ol className="space-y-2 text-sm text-gray-600">
-                    <li className="flex items-start gap-2">
-                      <span className="font-semibold text-sky-600">1.</span>
-                      <span>Verifique sua caixa de entrada</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="font-semibold text-sky-600">2.</span>
-                      <span>Clique no link recebido (válido por 1 hora)</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="font-semibold text-sky-600">3.</span>
-                      <span>Crie sua nova senha</span>
-                    </li>
-                  </ol>
-                </div>
+                <Input
+                  label="Confirmar Nova Senha"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Digite a senha novamente"
+                  icon={Lock}
+                />
 
-                <div className="space-y-3">
-                  <Button
-                    onClick={() => setCurrentPage('login')}
-                    variant="primary"
-                    fullWidth
-                    className="py-3"
-                  >
-                    Voltar para o Login
-                  </Button>
+                <Button 
+                  onClick={handleResetPassword} 
+                  variant="primary" 
+                  fullWidth 
+                  className="py-3 text-lg"
+                >
+                  {isLoading ? 'Redefinindo...' : 'Redefinir Senha'}
+                </Button>
+              </div>
 
-                  <button
-                    onClick={() => {
-                      setEmailSent(false);
-                      setEmail('');
-                      setError('');
-                    }}
-                    className="w-full text-sm text-sky-600 hover:text-sky-700 transition"
-                  >
-                    Não recebeu o email? Enviar novamente
-                  </button>
-                </div>
+              <div className="mt-8 p-4 bg-sky-50 rounded-lg">
+                <h3 className="text-sm font-semibold text-gray-800 mb-2">
+                  Sua senha deve conter:
+                </h3>
+                <ul className="text-xs text-gray-600 space-y-1">
+                  <li className="flex items-center gap-2">
+                    <span className={newPassword.length >= 6 ? 'text-green-600' : 'text-gray-400'}>●</span>
+                    Pelo menos 6 caracteres
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className={newPassword === confirmPassword && newPassword ? 'text-green-600' : 'text-gray-400'}>●</span>
+                    As senhas devem ser iguais
+                  </li>
+                </ul>
               </div>
             </>
+          )}
+
+          {/* Passo 4: Sucesso */}
+          {step === 'success' && (
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                Senha Redefinida!
+              </h1>
+              <p className="text-gray-600 mb-8">
+                Sua senha foi alterada com sucesso. Agora você pode fazer login com sua nova senha.
+              </p>
+
+              <Button
+                onClick={() => setCurrentPage('login')}
+                variant="primary"
+                fullWidth
+                className="py-3 text-lg"
+              >
+                Ir para o Login
+              </Button>
+            </div>
           )}
         </div>
       </div>
 
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-sky-400 to-sky-600 items-center justify-center p-12">
+      <div className="hidden lg:flex flex-1 bg-linear-to-br from-sky-400 to-sky-600 items-center justify-center p-12">
         <div className="text-white max-w-md">
           <Lock className="w-16 h-16 mb-6" />
           
@@ -194,56 +369,57 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
             Recuperação Segura
           </h2>
           <p className="text-xl text-sky-50 mb-8">
-            Protegemos seus dados com os mais altos padrões de segurança
+            Processo em 3 passos para garantir sua segurança
           </p>
 
           <div className="space-y-6">
             <div className="flex items-start gap-4">
-              <div className="bg-white/20 p-3 rounded-lg backdrop-blur-sm flex-shrink-0">
-                <Shield className="w-6 h-6" />
+              <div className={`${step === 'email' || step === 'code' || step === 'password' || step === 'success' ? 'bg-white text-sky-600' : 'bg-white/20 text-white'} p-3 rounded-lg backdrop-blur-sm shrink-0 font-bold`}>
+                1
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Processo Seguro</h3>
+                <h3 className="font-semibold text-lg mb-1">Informar Email</h3>
                 <p className="text-sm text-sky-50">
-                  Link único e temporário enviado apenas para seu email cadastrado
+                  Digite o email cadastrado na sua conta
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-white/20 p-3 rounded-lg backdrop-blur-sm flex-shrink-0">
-                <Mail className="w-6 h-6" />
+              <div className={`${step === 'code' || step === 'password' || step === 'success' ? 'bg-white text-sky-600' : 'bg-white/20 text-white'} p-3 rounded-lg backdrop-blur-sm flex-shrink-0 font-bold`}>
+                2
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Verificação por Email</h3>
+                <h3 className="font-semibold text-lg mb-1">Validar Código</h3>
                 <p className="text-sm text-sky-50">
-                  Garantimos que apenas você possa acessar sua conta
+                  Insira o código de 6 dígitos enviado por email
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-white/20 p-3 rounded-lg backdrop-blur-sm flex-shrink-0">
-                <Lock className="w-6 h-6" />
+              <div className={`${step === 'password' || step === 'success' ? 'bg-white text-sky-600' : 'bg-white/20 text-white'} p-3 rounded-lg backdrop-blur-sm shrink-0 font-bold`}>
+                3
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Criptografia Avançada</h3>
+                <h3 className="font-semibold text-lg mb-1">Nova Senha</h3>
                 <p className="text-sm text-sky-50">
-                  Suas senhas são armazenadas com criptografia de ponta
+                  Defina uma nova senha segura para sua conta
                 </p>
               </div>
             </div>
           </div>
 
           <div className="mt-10 p-6 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20">
-            <h3 className="font-semibold text-lg mb-2">Precisa de ajuda?</h3>
-            <p className="text-sm text-sky-50 mb-3">
-              Nossa equipe está disponível para auxiliar você
-            </p>
-            <p className="text-sm">
-              📧 suporte@imov.com.br<br />
-              📱 (11) 9999-9999
-            </p>
+            <div className="flex items-start gap-3 mb-4">
+              <Shield className="w-6 h-6 shrink-0" />
+              <div>
+                <h3 className="font-semibold text-lg mb-1">Segurança Garantida</h3>
+                <p className="text-sm text-sky-50">
+                  Códigos válidos por apenas 15 minutos e podem ser usados uma única vez
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
