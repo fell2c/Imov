@@ -33,7 +33,7 @@ public class MailUtil {
             message.setSubject(assunto);
             message.setText(mensagem);
             Transport.send(message);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
