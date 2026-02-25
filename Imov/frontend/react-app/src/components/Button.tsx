@@ -10,7 +10,7 @@ export function Button({
   type = "button",
 }: ButtonProps) {
   const baseStyles =
-    "px-4 py-2 rounded-lg font-semibold transition flex items-center justify-center gap-2";
+    "px-4 py-2 rounded-lg font-semibold transition flex items-center justify-center gap-2 cursor-pointer";
 
   const variants: Record<ButtonVariant, string> = {
     primary: "bg-sky-500 text-white hover:bg-sky-600",

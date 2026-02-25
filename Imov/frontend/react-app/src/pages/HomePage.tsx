@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Building2, Home, Star, DollarSign, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { SearchBar } from '../components/SearchBar';
-import { CategoryCard } from '../components/CategoryCard';
 import { PropertyCard } from '../components/PropertyCard';
-import type { Property, Category, PageType } from '../types/Index';
+import type { Property, PageType } from '../types/Index';
 
 interface HomePageProps {
   setCurrentPage: (page: PageType) => void;
@@ -91,13 +90,6 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
     }
   ];
 
-  const categories: Category[] = [
-    { name: 'Apartamentos', icon: Building2, count: 234 },
-    { name: 'Casas', icon: Home, count: 156 },
-    { name: 'Lançamentos', icon: Star, count: 45 },
-    { name: 'Alto Padrão', icon: DollarSign, count: 78 }
-  ];
-
   const toggleFavorite = (id: number): void => {
     setFavorites(prev =>
       prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
@@ -118,11 +110,11 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
 
       <section className="bg-linear-to-r from-sky-400 to-sky-600 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Encontre o Imóvel dos Seus Sonhos
+          <h1 className="text-4xl md:text-5xl text-center font-bold mb-4">
+            Encontre o imóvel dos seus sonhos
           </h1>
-          <p className="text-xl mb-8 text-sky-50">
-            Milhares de opções para você comprar ou alugar
+          <p className="text-xl mb-8 text-center text-sky-50">
+            Busque por diferentes imóveis e encontre o que deseja.
           </p>
 
           <SearchBar
@@ -134,18 +126,9 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
       </section>
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Categorias Populares</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {categories.map((category, index) => (
-            <CategoryCard key={index} category={category} />
-          ))}
-        </div>
-      </section>
-
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Imóveis em Destaque</h2>
-          <button className="text-sky-600 hover:text-sky-700 flex items-center gap-1">
+          <button className="text-sky-600 hover:text-sky-700 flex items-center gap-1 cursor-po">
             Ver todos
             <ChevronRight className="w-4 h-4" />
           </button>

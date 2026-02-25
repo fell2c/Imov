@@ -22,7 +22,6 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Passo 1: Enviar email com código e ARMAZENAR o token
   const handleSendCode = async (): Promise<void> => {
     setError('');
 
@@ -149,8 +148,8 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
             onClick={() => setCurrentPage('home')}
             className="flex items-center gap-2 mb-8 hover:opacity-80 transition"
           >
-            <Home className="w-10 h-10 text-sky-500" />
-            <span className="text-3xl font-bold text-sky-600">Imov</span>
+            <Home className="w-10 h-10 text-sky-500 cursor-pointer" />
+            <span className="text-3xl font-bold text-sky-600 cursor-pointer">Imov</span>
           </button>
 
           {step === 'email' && (
@@ -314,7 +313,7 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
                   onClick={handleResetPassword} 
                   variant="primary" 
                   fullWidth 
-                  className="py-3 text-lg"
+                  className="py-3 text-lg cursor-pointer"
                 >
                   {isLoading ? 'Redefinindo...' : 'Redefinir Senha'}
                 </Button>
@@ -355,7 +354,7 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
                 onClick={() => setCurrentPage('login')}
                 variant="primary"
                 fullWidth
-                className="py-3 text-lg"
+                className="py-3 text-lg cursor-pointer"
               >
                 Ir para o Login
               </Button>

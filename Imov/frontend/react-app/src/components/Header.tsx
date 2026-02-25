@@ -33,14 +33,14 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setCurrentPage('home')}
             className="flex items-center gap-2 hover:opacity-80 transition"
           >
-            <Home className="w-8 h-8 text-sky-500" />
-            <span className="text-2xl font-bold text-sky-600">Imov</span>
+            <Home className="w-8 h-8 text-sky-500 cursor-pointer" />
+            <span className="text-2xl font-bold text-sky-600 cursor-pointer">Imov</span>
           </button>
 
           <nav className="hidden md:flex items-center gap-6">          
             <button 
               onClick={() => handleProtectedRoute('my-ads')}
-              className="text-gray-700 hover:text-sky-600 transition flex items-center gap-1"
+              className="text-gray-700 hover:text-sky-600 transition flex items-center gap-1 cursor-pointer"
             >
               <Building2 className="w-4 h-4" />
               Meus Anúncios
@@ -50,13 +50,13 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => handleProtectedRoute('profile')}
-                  className="flex items-center gap-2 text-sm text-gray-700 hover:text-sky-600 transition"
+                  className="flex items-center gap-2 text-sm text-gray-700 hover:text-sky-600 transition cursor-pointer"
                 >
                   <UserCircle className="w-5 h-5" />
                   {user?.nome || 'Usuário'}
                 </button>
                 <Button onClick={logout} variant="outline">
-                  Sair
+                  Logout
                 </Button>
               </div>
             ) : (
