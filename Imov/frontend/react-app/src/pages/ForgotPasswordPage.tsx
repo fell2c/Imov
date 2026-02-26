@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Home, Mail, ArrowLeft, CheckCircle, Lock, Shield, HelpCircle, Key } from 'lucide-react';
+import { Home, Mail, ArrowLeft, CheckCircle, Lock, HelpCircle, Key } from 'lucide-react';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import type { PageType } from '../types/Index';
@@ -76,8 +76,8 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
       return;
     }
 
-    if (code.length !== 8) {
-      setError('O código deve ter 8 dígitos');
+    if (code.length !== 6) {
+      setError('O código deve ter 6 dígitos');
       return;
     }
 
@@ -219,7 +219,7 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
                   label="Código de Verificação"
                   type="text"
                   value={code}
-                  onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 8))}                
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}                
                   icon={Key}
                 />
 
@@ -394,7 +394,7 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ setCurre
               <div>
                 <h3 className="font-semibold text-lg mb-1">Validar Código</h3>
                 <p className="text-sm text-sky-50">
-                  Insira o código de 8 dígitos enviado por email
+                  Insira o código de 6 dígitos enviado por email
                 </p>
               </div>
             </div>

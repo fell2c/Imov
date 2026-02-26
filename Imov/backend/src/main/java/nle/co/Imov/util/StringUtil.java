@@ -166,7 +166,7 @@ public class StringUtil {
     }
 
     public static String getSenhaAleatoria() {
-        int qtdeMaximaCaracteres = 8;
+        int qtdeMaximaCaracteres = 6;
 
         String[] caracteres = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
