@@ -3,7 +3,7 @@ import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import type { PageType } from '../types/Index.ts';
 import { useAuth } from '../contexts/AuthContext';
-import { User as UserIcon, Mail, Phone, MapPin as Location, Edit2, Save, X as CloseIcon } from 'lucide-react';
+import { User as UserIcon, Mail, Phone, MapPin as Location, Edit2, Save, X as CloseIcon, Lock } from 'lucide-react';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 
@@ -15,12 +15,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isChangingPassword, setIsChangingPassword] = useState<boolean>(false);
 
   const [formData, setFormData] = useState({
     name: user?.nome || '',
     email: user?.email || '',
     phone: user?.telefone || '',
     location: [user?.cidade, user?.uf].filter(Boolean).join(', ')
+  });
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
   });
 
   const handleSave = async (): Promise<void> => {
@@ -36,6 +43,34 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
       location: [user?.cidade, user?.uf].filter(Boolean).join(', ')
     });
     setIsEditing(false);
+  };
+
+  const handleSavePassword = async (): Promise<void> => {
+    if (!passwordData.currentPassword || passwordData.newPassword !== passwordData.confirmPassword) {
+      alert('Por favor, preencha todos os campos!');
+      return;
+    }
+    
+    if (passwordData.newPassword.length < 6) {
+      alert('A senha deve ter no mínimo 6 caracteres!');
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      alert('As senhas novas não coincidem!');
+      return;
+    }
+
+    console.log('Alterando senha...');
+    
+    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    setIsChangingPassword(false);
+    alert('Senha alterada com sucesso!');
+  };
+
+  const handleCancelPassword = (): void => {
+    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    setIsChangingPassword(false);
   };
 
   return (
@@ -178,9 +213,63 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">
                     Segurança
                   </h3>
-                  <Button variant="outline">
-                    Alterar Senha
-                  </Button>
+
+                  {!isChangingPassword ? (
+                    <Button 
+                      variant="outline"
+                      onClick={() => setIsChangingPassword(true)}
+                    >
+                      Alterar Senha
+                    </Button>
+                  ) : (
+                    <div className="space-y-4">
+                      <Input
+                        label="Senha Atual"
+                        type="password"
+                        value={passwordData.currentPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                        icon={Lock}
+                        placeholder="Digite sua senha atual"
+                      />
+
+                      <Input
+                        label="Nova Senha"
+                        type="password"
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                        icon={Lock}
+                        placeholder="Digite sua nova senha"
+                      />
+
+                      <Input
+                        label="Confirmar Nova Senha"
+                        type="password"
+                        value={passwordData.confirmPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                        icon={Lock}
+                        placeholder="Confirme sua nova senha"
+                      />
+
+                      <div className="flex gap-3 pt-2">
+                        <Button 
+                          variant="primary" 
+                          icon={Save}
+                          onClick={handleSavePassword}
+                          className="flex-1"
+                        >
+                          Salvar Nova Senha
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          icon={CloseIcon}
+                          onClick={handleCancelPassword}
+                          className="flex-1"
+                        >
+                          Cancelar
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
