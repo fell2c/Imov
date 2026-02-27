@@ -36,4 +36,8 @@ public class AnuncianteService {
     public Anunciante getAnuncianteByEmail(String email) {
         return this.anuncianteCrud.findAnuncianteByEmail(email);
     }
+
+    public List<Anunciante> getAnunciantesComFiltros(String nome, String email, String cpfCnpj, String cidade, String uf, String tipoLocalizacao) {
+        return this.anuncianteCrud.buscarComFiltros(nome, email, cpfCnpj, cidade, uf, tipoLocalizacao);
+    }
 }

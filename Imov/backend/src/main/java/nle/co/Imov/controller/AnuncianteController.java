@@ -43,4 +43,18 @@ public class AnuncianteController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
+
+    // @formatter:off
+    @CrossOrigin(origins = "*")
+    @GetMapping("/buscar-anunciantes/filtros")
+    public ResponseEntity<?> buscarAnunciantesComFiltros(@RequestParam(required = false) String nome, @RequestParam(required = false) String email,
+                                                         @RequestParam(required = false) String cpfCnpj, @RequestParam(required = false) String cidade,
+                                                         @RequestParam(required = false) String uf, @RequestParam(required = false) String tipoLocalizacao) {
+        try {
+            return new ResponseEntity<>(anuncianteService.getAnunciantesComFiltros(nome, email, cpfCnpj, cidade, uf, tipoLocalizacao), HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+    // @formatter:on
 }
