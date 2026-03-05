@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { User as UserIcon, Mail, Phone, MapPin as Location, Edit2, Save, X as CloseIcon, Lock } from 'lucide-react';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
+import { apiClient } from '../utils/Api.ts';
 
 interface ProfilePageProps {
   setCurrentPage: (page: PageType) => void;
@@ -16,6 +17,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isChangingPassword, setIsChangingPassword] = useState<boolean>(false);
+  const [isLoadingPassword, setIsLoadingPassword] = useState<boolean>(false);
 
   const [formData, setFormData] = useState({
     name: user?.nome || '',
@@ -46,7 +48,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
   };
 
   const handleSavePassword = async (): Promise<void> => {
-    if (!passwordData.currentPassword || passwordData.newPassword !== passwordData.confirmPassword) {
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
       alert('Por favor, preencha todos os campos!');
       return;
     }
@@ -61,11 +63,54 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
       return;
     }
 
-    console.log('Alterando senha...');
-    
-    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    setIsChangingPassword(false);
-    alert('Senha alterada com sucesso!');
+    if (!user?.id) {
+      alert('Erro: Usuário não identificado. Faça login novamente.');
+      return;
+    }
+
+    setIsLoadingPassword(true);
+
+    try {
+      const payload = {
+        id: user.id,
+        senhaVelha: passwordData.currentPassword,
+        senhaNova: passwordData.newPassword
+      };
+
+      const response = await apiClient('/alterar-senha-logado', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',        
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        if (response.status === 400) {
+          const errorMessage = await response.text();
+          alert(errorMessage || 'A senha antiga está incorreta!');
+          return;
+        } else if (response.status === 404) {
+          alert('Usuário não encontrado!');
+          return;
+        } else {
+          throw new Error('Erro ao alterar senha');
+        }
+      }
+      const data = await response.json();
+      console.log('Senha alterada com sucesso:', data);
+
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setIsChangingPassword(false);
+      alert('Senha alterada com sucesso!');
+
+    } catch (error) {
+      console.error('Erro ao alterar senha:', error);
+      alert('Erro ao alterar senha. Tente novamente mais tarde.');
+    } finally {
+      setIsLoadingPassword(false);
+    }
   };
 
   const handleCancelPassword = (): void => {
@@ -255,15 +300,15 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
                           variant="primary" 
                           icon={Save}
                           onClick={handleSavePassword}
-                          className="flex-1"
+                          className="flex-1"                        
                         >
-                          Salvar Nova Senha
+                          {isLoadingPassword ? 'Salvando...' : 'Salvar Nova Senha'}
                         </Button>
                         <Button 
                           variant="outline" 
                           icon={CloseIcon}
                           onClick={handleCancelPassword}
-                          className="flex-1"
+                          className="flex-1"                      
                         >
                           Cancelar
                         </Button>
