@@ -32,6 +32,7 @@ export interface ButtonProps {
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement>{
   label?: string;
   icon?: React.ComponentType<{ className?: string }>;
+  showPasswordToggle?: boolean;
 }
 
 export interface SearchBarProps {

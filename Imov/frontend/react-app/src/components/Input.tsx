@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import type { InputProps } from '../types/Index';
 
 export const Input: React.FC<InputProps> = ({ 
@@ -8,8 +9,16 @@ export const Input: React.FC<InputProps> = ({
   onChange, 
   placeholder, 
   icon: Icon,
-  className = ''
+  className = '',
+  showPasswordToggle = false
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  
+  // Determina o tipo real do input
+  const inputType = showPasswordToggle && type === 'password' 
+    ? (showPassword ? 'text' : 'password')
+    : type;
+
   return (
     <div className={className}>
       {label && (
@@ -24,14 +33,24 @@ export const Input: React.FC<InputProps> = ({
           </div>
         )}
         <input
-          type={type}
+          type={inputType}
           value={value}
           onChange={onChange}
           placeholder={placeholder}
           className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition ${
             Icon ? 'pl-12' : ''
-          }`}
+          } ${showPasswordToggle && type === 'password' ? 'pr-12' : ''}`}
         />
+        {showPasswordToggle && type === 'password' && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-sky-500 transition cursor-pointer"
+            aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+          >
+            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+          </button>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, Search, MapPin, Eye, EyeOff } from 'lucide-react';
+import { Home, Search, MapPin, Lock } from 'lucide-react';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { useAuth } from '../contexts/AuthContext';
@@ -12,7 +12,6 @@ interface LoginPageProps {
 export const LoginPage: React.FC<LoginPageProps> = ({ setCurrentPage }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -80,20 +79,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ setCurrentPage }) => {
 
             <div className="relative">
                 <Input
-                  label="Senha"
-                  type={showPassword ? 'text' : 'password'}
+                  label="Senha Atual"
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 bottom-3.5 text-gray-400 hover:text-sky-500 transition cursor-pointer"
-                  aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
+                  icon={Lock}                
+                  showPasswordToggle={true}
+                />                
               </div>
 
             <div className="flex items-center justify-between">

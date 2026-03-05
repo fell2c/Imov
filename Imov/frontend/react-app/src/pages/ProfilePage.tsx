@@ -275,6 +275,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
                         onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                         icon={Lock}
                         placeholder="Digite sua senha atual"
+                        showPasswordToggle={true}                        
                       />
 
                       <Input
@@ -284,6 +285,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
                         onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                         icon={Lock}
                         placeholder="Digite sua nova senha"
+                        showPasswordToggle={true}
                       />
 
                       <Input
@@ -293,6 +295,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
                         onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                         icon={Lock}
                         placeholder="Confirme sua nova senha"
+                        showPasswordToggle={true}
                       />
 
                       <div className="flex gap-3 pt-2">
