@@ -124,6 +124,30 @@ public class LoginController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/alterar-senha-logado")
+    public ResponseEntity<?> alterarSenhaLogado(@RequestBody AlterarSenhaJson alterarSenhaJson) {
+        if (alterarSenhaJson == null || alterarSenhaJson.getId() == null || StringUtil.isNullOrEmpty(alterarSenhaJson.getSenhaVelha()) || StringUtil.isNullOrEmpty(alterarSenhaJson.getSenhaNova())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        Anunciante anunciante = anuncianteService.getAnuncianteById(alterarSenhaJson.getId());
+
+        if (anunciante == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        if (!PasswordUtil.compararSenhas(anunciante.getSenha(), PasswordUtil.encriptarSenha(alterarSenhaJson.getSenhaVelha()))) {
+            return new ResponseEntity<>("A senha antiga está incorreta", HttpStatus.BAD_REQUEST);
+        }
+
+        anunciante.setSenha(PasswordUtil.encriptarSenha(alterarSenhaJson.getSenhaNova()));
+        anuncianteService.salvar(anunciante);
+
+        return new ResponseEntity<>(anunciante, HttpStatus.OK);
+    }
+
     /**
      * Retorna os dados do usuário autenticado
      * Endpoint protegido - requer JWT válido no header Authorization
