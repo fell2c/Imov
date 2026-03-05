@@ -138,7 +138,7 @@ public class LoginController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        if (!PasswordUtil.compararSenhas(anunciante.getSenha(), PasswordUtil.encriptarSenha(alterarSenhaJson.getSenhaVelha()))) {
+        if (!PasswordUtil.compararSenhas(alterarSenhaJson.getSenhaVelha(), anunciante.getSenha())) {
             return new ResponseEntity<>("A senha antiga está incorreta", HttpStatus.BAD_REQUEST);
         }
 
