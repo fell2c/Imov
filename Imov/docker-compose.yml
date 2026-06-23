@@ -1,0 +1,54 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: imov-mysql
+    restart: unless-stopped
+    # Torna os nomes de tabela case-insensitive (igual ao MySQL no Windows),
+    # senao o Hibernate (@Table "anunciante") nao acha as tabelas criadas em
+    # MAIUSCULAS pelo Flyway (ANUNCIANTE) num MySQL Linux case-sensitive.
+    command: --lower-case-table-names=1
+    environment:
+      MYSQL_ROOT_PASSWORD: masterkey
+      MYSQL_DATABASE: db_imov
+    ports:
+      # Mapeado para 3307 no host para nao conflitar com um MySQL local na 3306.
+      # O backend acessa via rede interna (mysql:3306), entao isso nao o afeta.
+      - "3307:3306"
+    volumes:
+      - imov-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pmasterkey"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: imov-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      # Aponta o backend para o container do MySQL (sobrescreve o application.properties)
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/db_imov?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: masterkey
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend/react-app
+      args:
+        # URL acessada pelo navegador do usuário (porta publicada do backend)
+        VITE_API_URL: http://localhost:8080
+    container_name: imov-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  imov-mysql-data:
