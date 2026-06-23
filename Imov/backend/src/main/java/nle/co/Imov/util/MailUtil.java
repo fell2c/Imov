@@ -8,8 +8,14 @@ import java.util.Properties;
 
 public class MailUtil {
     public static void enviarEmail(String assunto, String mensagem, String emailDestinatario) {
-        final String username = "projeto.futuro29@gmail.com";
-        final String password = "epgh qcwv cliu alky";
+        // Credenciais via variavel de ambiente (nao versionar segredos)
+        final String username = System.getenv("MAIL_USERNAME");
+        final String password = System.getenv("MAIL_PASSWORD");
+
+        if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+            System.err.println("MAIL_USERNAME/MAIL_PASSWORD nao configurados; e-mail nao enviado.");
+            return;
+        }
 
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
