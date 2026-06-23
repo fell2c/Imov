@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { SearchBar } from '../components/SearchBar';
 import { PropertyCard } from '../components/PropertyCard';
 import type { Property, PageType } from '../types/Index';
+import { buscarAnuncios } from '../utils/anuncioService';
 
 interface HomePageProps {
   setCurrentPage: (page: PageType) => void;
@@ -15,80 +16,27 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [favorites, setFavorites] = useState<number[]>([]);
 
-  const properties: Property[] = [
-    {
-      id: 1,
-      title: 'Apartamento Moderno no Centro',
-      price: 450000,
-      location: 'Centro, São Paulo',
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 85,
-      image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop',
-      rating: 4.8,
-      type: 'Apartamento'
-    },
-    {
-      id: 2,
-      title: 'Casa com Piscina',
-      price: 890000,
-      location: 'Jardins, São Paulo',
-      bedrooms: 4,
-      bathrooms: 3,
-      area: 250,
-      image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop',
-      rating: 4.9,
-      type: 'Casa'
-    },
-    {
-      id: 3,
-      title: 'Cobertura Duplex Premium',
-      price: 1200000,
-      location: 'Moema, São Paulo',
-      bedrooms: 4,
-      bathrooms: 4,
-      area: 180,
-      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&h=300&fit=crop',
-      rating: 5.0,
-      type: 'Cobertura'
-    },
-    {
-      id: 4,
-      title: 'Studio Compacto',
-      price: 280000,
-      location: 'Vila Mariana, São Paulo',
-      bedrooms: 1,
-      bathrooms: 1,
-      area: 35,
-      image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop',
-      rating: 4.5,
-      type: 'Studio'
-    },
-    {
-      id: 5,
-      title: 'Loft Contemporâneo',
-      price: 620000,
-      location: 'Pinheiros, São Paulo',
-      bedrooms: 2,
-      bathrooms: 2,
-      area: 95,
-      image: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=400&h=300&fit=crop',
-      rating: 4.7,
-      type: 'Loft'
-    },
-    {
-      id: 6,
-      title: 'Casa de Condomínio',
-      price: 750000,
-      location: 'Morumbi, São Paulo',
-      bedrooms: 3,
-      bathrooms: 3,
-      area: 200,
-      image: 'https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?w=400&h=300&fit=crop',
-      rating: 4.6,
-      type: 'Casa'
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const carregarAnuncios = async (termo = ''): Promise<void> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const resultados = await buscarAnuncios(termo);
+      setProperties(resultados);
+    } catch (e) {
+      console.error(e);
+      setError('Não foi possível carregar os imóveis. Tente novamente.');
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  };
+
+  useEffect(() => {
+    carregarAnuncios();
+  }, []);
 
   const toggleFavorite = (id: number): void => {
     setFavorites(prev =>
@@ -97,7 +45,12 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
   };
 
   const handleSearch = (): void => {
-    console.log('Searching for:', searchTerm);
+    carregarAnuncios(searchTerm);
+  };
+
+  const handleViewDetails = (id: number): void => {
+    sessionStorage.setItem('detailAnuncioId', String(id));
+    setCurrentPage('detail');
   };
 
   return (
@@ -134,16 +87,38 @@ export const HomePage: React.FC<HomePageProps> = ({ setCurrentPage }) => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.map((property) => (
-            <PropertyCard
-              key={property.id}
-              property={property}
-              isFavorite={favorites.includes(property.id)}
-              onToggleFavorite={toggleFavorite}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="text-center py-16 text-gray-500">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-sky-500 mx-auto mb-4"></div>
+            Carregando imóveis...
+          </div>
+        ) : error ? (
+          <div className="text-center py-16">
+            <p className="text-red-600 mb-4">{error}</p>
+            <button
+              onClick={() => carregarAnuncios(searchTerm)}
+              className="text-sky-600 hover:text-sky-700 font-semibold"
+            >
+              Tentar novamente
+            </button>
+          </div>
+        ) : properties.length === 0 ? (
+          <div className="text-center py-16 text-gray-500">
+            Nenhum imóvel encontrado.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {properties.map((property) => (
+              <PropertyCard
+                key={property.id}
+                property={property}
+                isFavorite={favorites.includes(property.id)}
+                onToggleFavorite={toggleFavorite}
+                onViewDetails={handleViewDetails}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       <Footer />

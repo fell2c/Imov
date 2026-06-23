@@ -7,6 +7,8 @@ import { MyAdsPage } from './pages/MyAdsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { NewAdPage } from './pages/NewAdPage';
+import { DetailPage } from './pages/DetailPage';
 import type { PageType } from './types/Index.ts';
 
 // Adapter para manter compatibilidade com o setCurrentPage das suas páginas
@@ -20,6 +22,8 @@ const useSetCurrentPage = () => {
       'forgot-password': '/esqueci-senha',
       'my-ads': '/meus-anuncios',
       'profile': '/perfil',
+      'new-ad': '/novo-anuncio',
+      'detail': '/imovel',
     };
     navigate(routes[page]);
   };
@@ -36,6 +40,8 @@ const RegisterPageWrapper = () => <RegisterPage setCurrentPage={useSetCurrentPag
 const ForgotPasswordPageWrapper = () => <ForgotPasswordPage setCurrentPage={useSetCurrentPage()} />;
 const MyAdsPageWrapper = () => <MyAdsPage setCurrentPage={useSetCurrentPage()} />;
 const ProfilePageWrapper = () => <ProfilePage setCurrentPage={useSetCurrentPage()} />;
+const NewAdPageWrapper = () => <NewAdPage setCurrentPage={useSetCurrentPage()} />;
+const DetailPageWrapper = () => <DetailPage setCurrentPage={useSetCurrentPage()} />;
 
 const AppRoutesInner: React.FC = () => {
   const { isLoading } = useAuth();
@@ -59,6 +65,8 @@ const AppRoutesInner: React.FC = () => {
       <Route path="/esqueci-senha" element={<ForgotPasswordPageWrapper />} />
       <Route path="/meus-anuncios" element={<PrivateRoute><MyAdsPageWrapper /></PrivateRoute>} />
       <Route path="/perfil" element={<PrivateRoute><ProfilePageWrapper /></PrivateRoute>} />
+      <Route path="/novo-anuncio" element={<PrivateRoute><NewAdPageWrapper /></PrivateRoute>} />
+      <Route path="/imovel" element={<DetailPageWrapper />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
