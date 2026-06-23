@@ -1,5 +1,6 @@
 package nle.co.Imov.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class TipoAnuncio {
     @Column(name = "DURACAO_DIA", nullable = false)
     private Integer duracaoDia;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "tipoAnuncio", fetch = FetchType.LAZY)
     private List<Anuncio> anuncios = new ArrayList<>();
 

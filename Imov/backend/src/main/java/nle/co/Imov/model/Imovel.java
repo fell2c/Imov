@@ -1,5 +1,6 @@
 package nle.co.Imov.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -91,6 +92,7 @@ public class Imovel {
     @Column(name = "DETALHES", columnDefinition = "text")
     private String detalhes;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "imovel", fetch = FetchType.LAZY)
     private List<Anuncio> anuncios = new ArrayList<>();
 

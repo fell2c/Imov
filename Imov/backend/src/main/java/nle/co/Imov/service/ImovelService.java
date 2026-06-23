@@ -28,4 +28,8 @@ public class ImovelService {
     public Imovel getImovelById(Integer id) {
         return this.imovelCrud.findById(id).orElse(null);
     }
+
+    public void excluir(Integer id) {
+        this.imovelCrud.deleteById(id);
+    }
 }

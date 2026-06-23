@@ -38,6 +38,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints públicos (não precisam de autenticação)
                         .requestMatchers("/login", "/enviar-codigo-recuperacao", "/alterar-senha", "/cadastrar-anunciante",  // Permite cadastro
+                                "/buscar-anuncios", "/buscar-anuncios/filtros", "/buscar-anuncio/**",  // Navegacao publica de anuncios
+                                "/buscar-tipos-anuncio",  // Tipos de anuncio (Bronze/Prata/Ouro)
                                 "/error").permitAll()
 
                         // Todas as outras rotas precisam de autenticação
