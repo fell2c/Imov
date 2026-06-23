@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Map;
 
 @RestController
 public class AnuncioController {
@@ -52,8 +53,13 @@ public class AnuncioController {
 
             anuncio.setImovel(imovelSalvo);
 
-            anuncioService.salvar(anuncio);
-            return ResponseEntity.status(HttpStatus.OK).build();
+            Anuncio anuncioSalvo = anuncioService.salvar(anuncio);
+
+            // Retorna os ids para o front poder enviar as imagens do imovel em seguida
+            return new ResponseEntity<>(Map.of(
+                    "id", anuncioSalvo.getId(),
+                    "imovelId", imovelSalvo.getId()
+            ), HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

@@ -36,6 +36,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: masterkey
     ports:
       - "8080:8080"
+    volumes:
+      # Persiste as imagens enviadas (WORKDIR do container e /app, upload-dir=uploads)
+      - imov-uploads:/app/uploads
 
   frontend:
     build:
@@ -52,3 +55,4 @@ services:
 
 volumes:
   imov-mysql-data:
+  imov-uploads:

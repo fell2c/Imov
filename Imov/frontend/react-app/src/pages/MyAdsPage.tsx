@@ -5,7 +5,7 @@ import type { Anuncio, PageType } from '../types/Index.ts';
 import { Plus, Edit, Trash2, Eye, MapPin, Bed, Bath, Square, Building2 } from 'lucide-react';
 import { Button } from '../components/Button';
 import { useAuth } from '../contexts/AuthContext';
-import { excluirAnuncio, getAnunciosByAnunciante } from '../utils/anuncioService';
+import { excluirAnuncio, getAnunciosByAnunciante, imagemUrl } from '../utils/anuncioService';
 
 interface MyAdsPageProps {
   setCurrentPage: (page: PageType) => void;
@@ -162,7 +162,7 @@ export const MyAdsPage: React.FC<MyAdsPageProps> = ({ setCurrentPage }) => {
                 <div className="flex flex-col md:flex-row">
                   <div className="md:w-64 h-48 md:h-auto">
                     <img
-                      src={FALLBACK_IMAGE}
+                      src={ad.imovel.imagens && ad.imovel.imagens.length > 0 ? imagemUrl(ad.imovel.imagens[0].nomeArquivo) : FALLBACK_IMAGE}
                       alt={ad.descricao}
                       className="w-full h-full object-cover"
                     />

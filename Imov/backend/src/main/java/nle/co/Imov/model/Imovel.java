@@ -96,6 +96,9 @@ public class Imovel {
     @OneToMany(mappedBy = "imovel", fetch = FetchType.LAZY)
     private List<Anuncio> anuncios = new ArrayList<>();
 
+    @OneToMany(mappedBy = "imovel", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ImovelImagem> imagens = new ArrayList<>();
+
     public Integer getId() {
         return id;
     }
@@ -310,6 +313,14 @@ public class Imovel {
 
     public void setAnuncios(List<Anuncio> anuncios) {
         this.anuncios = anuncios;
+    }
+
+    public List<ImovelImagem> getImagens() {
+        return imagens;
+    }
+
+    public void setImagens(List<ImovelImagem> imagens) {
+        this.imagens = imagens;
     }
 
     @Override
