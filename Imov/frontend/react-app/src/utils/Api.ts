@@ -6,24 +6,27 @@ export const apiClient = async (
 ): Promise<Response> => {
   const url = `${API_URL}${endpoint}`;
 
-  const defaultOptions: RequestInit = {
-    credentials: 'include', // CRUCIAL: Envia cookies HttpOnly
-    headers: {
-      'Content-Type': 'application/json',
-    },
+  // Anexa o token JWT (se houver) no header Authorization de toda requisição
+  const token = localStorage.getItem('accessToken');
+
+  const defaultHeaders: Record<string, string> = {
+    'Content-Type': 'application/json',
   };
+  if (token) {
+    defaultHeaders.Authorization = `Bearer ${token}`;
+  }
 
   const response = await fetch(url, {
-    ...defaultOptions,
     ...options,
     headers: {
-      ...defaultOptions.headers,
+      ...defaultHeaders,
       ...options.headers,
     },
   });
 
-  // Se retornar 401 (não autorizado), redireciona
+  // Se retornar 401 (não autorizado), limpa o token e redireciona
   if (response.status === 401) {
+    localStorage.removeItem('accessToken');
     window.location.href = '/';
   }
 

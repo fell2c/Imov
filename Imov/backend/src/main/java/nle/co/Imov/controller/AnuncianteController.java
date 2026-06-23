@@ -26,6 +26,15 @@ public class AnuncianteController {
             }
 
             anunciante.setCpfCnpj(StringUtil.getOnlyNumbers(anunciante.getCpfCnpj()));
+
+            // Garante unicidade: e-mail e CPF/CNPJ nao podem ja existir
+            if (anuncianteService.getAnuncianteByEmail(anunciante.getEmail()) != null) {
+                return new ResponseEntity<>("E-mail já cadastrado", HttpStatus.CONFLICT);
+            }
+            if (anuncianteService.getAnuncianteByCpf(anunciante.getCpfCnpj()) != null) {
+                return new ResponseEntity<>("CPF/CNPJ já cadastrado", HttpStatus.CONFLICT);
+            }
+
             anunciante.setSenha(PasswordUtil.encriptarSenha(anunciante.getSenha()));
             anuncianteService.salvar(anunciante);
             return ResponseEntity.status(HttpStatus.OK).build();

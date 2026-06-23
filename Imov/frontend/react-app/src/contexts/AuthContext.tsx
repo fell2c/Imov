@@ -19,11 +19,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkAuth = async (): Promise<void> => {
     try {
-      const response = await apiClient("/me", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+      // Sem token armazenado, não há sessão para verificar
+      if (!localStorage.getItem("accessToken")) {
+        setUser(null);
+        return;
+      }
+
+      const response = await apiClient("/me");
 
       if (response.ok) {
         const userData: User = await response.json();

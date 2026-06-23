@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Certificados locais (interceptacao TLS do antivirus) - especificos da maquina ###
+norton-root.crt
+maven-truststore.jks

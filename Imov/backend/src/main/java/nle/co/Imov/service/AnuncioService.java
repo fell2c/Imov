@@ -24,11 +24,19 @@ public class AnuncioService {
     }
 
     public List<Anuncio> getAnuncios() {
-        return (List<Anuncio>) this.anuncioCrud.findAll();
+        return this.anuncioCrud.findAllWithRelations();
     }
 
     public Anuncio getAnuncioById(Integer id) {
         return this.anuncioCrud.findById(id).orElse(null);
+    }
+
+    public Anuncio getAnuncioByIdComRelacoes(Integer id) {
+        return this.anuncioCrud.findByIdWithRelations(id);
+    }
+
+    public void excluir(Integer id) {
+        this.anuncioCrud.deleteById(id);
     }
 
     public List<Anuncio> getAnunciosComFiltros(Boolean ativo, String descricao, Integer idAnunciante, String tipoImovel, String tipoNegocio, String tipoLocalizacao, String cidade, String uf, BigDecimal valorMin, BigDecimal valorMax, Integer quartos, Integer banheiros, Integer garagens, String categoriaAnuncio, LocalDate dataInicioMin, LocalDate dataFimMax) {

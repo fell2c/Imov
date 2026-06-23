@@ -17,10 +17,10 @@ public class Anunciante {
     @Column(name = "NOME", nullable = false, length = 100)
     private String nome;
 
-    @Column(name = "EMAIL", nullable = false, length = 100)
+    @Column(name = "EMAIL", nullable = false, length = 100, unique = true)
     private String email;
 
-    @Column(name = "CPFCNPJ", nullable = false, length = 14)
+    @Column(name = "CPFCNPJ", nullable = false, length = 14, unique = true)
     private String cpfCnpj;
 
     @Column(name = "TELEFONE", length = 15)

@@ -10,6 +10,24 @@ import java.util.List;
 
 public interface AnuncioCrud extends CrudRepository<Anuncio, Integer> {
 
+    @Query("""
+            SELECT a FROM Anuncio a
+            JOIN FETCH a.imovel
+            JOIN FETCH a.anunciante
+            JOIN FETCH a.tipoAnuncio
+            ORDER BY a.id DESC
+            """)
+    List<Anuncio> findAllWithRelations();
+
+    @Query("""
+            SELECT a FROM Anuncio a
+            JOIN FETCH a.imovel
+            JOIN FETCH a.anunciante
+            JOIN FETCH a.tipoAnuncio
+            WHERE a.id = :id
+            """)
+    Anuncio findByIdWithRelations(@Param("id") Integer id);
+
     // @formatter:off
     @Query("""
             SELECT a FROM Anuncio a

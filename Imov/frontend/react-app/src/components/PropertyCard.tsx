@@ -3,16 +3,17 @@ import { MapPin, Star, Bed, Bath, Square, Heart } from 'lucide-react';
 import { Button } from './Button';
 import type { PropertyCardProps } from '../types/Index';
 
-export const PropertyCard: React.FC<PropertyCardProps> = ({ 
-  property, 
-  isFavorite, 
-  onToggleFavorite 
+export const PropertyCard: React.FC<PropertyCardProps> = ({
+  property,
+  isFavorite,
+  onToggleFavorite,
+  onViewDetails
 }) => {
   return (
     <div className="bg-white rounded-lg shadow hover:shadow-xl transition group overflow-hidden">
       <div className="relative">
         <img
-          src={property.image}
+          src={property.image || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop'}
           alt={property.title}
           className="w-full h-48 object-cover group-hover:scale-105 transition duration-300"
         />
@@ -34,10 +35,12 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       <div className="p-4">
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-semibold text-gray-800">{property.title}</h3>
-          <div className="flex items-center gap-1">
-            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-sm font-semibold">{property.rating}</span>
-          </div>
+          {property.rating != null && (
+            <div className="flex items-center gap-1">
+              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              <span className="text-sm font-semibold">{property.rating}</span>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-1 text-gray-500 text-sm mb-3">
@@ -66,7 +69,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               R$ {property.price.toLocaleString('pt-BR')}
             </p>
           </div>
-          <Button variant="primary" className="text-sm">
+          <Button variant="primary" className="text-sm" onClick={() => onViewDetails?.(property.id)}>
             Ver Detalhes
           </Button>
         </div>

@@ -6,9 +6,52 @@ export interface Property {
   bedrooms: number;
   bathrooms: number;
   area: number;
-  image: string;
-  rating: number;
+  image?: string;
+  rating?: number;
   type: string;
+}
+
+// ----- DTOs vindos do backend -----
+
+export interface Imovel {
+  id: number;
+  descricao: string;
+  tipoImovel: string;   // C = Casa, A = Apartamento, L = Lote
+  tipoNegocio: string;  // A = Aluguel, V = Venda, T = Troca
+  valor: number;
+  tipoLocalizacao?: string; // U = Urbana, R = Rural
+  endereco?: string;
+  numeroEndereco?: string;
+  complemento?: string;
+  cep?: string;
+  cidade: string;
+  uf: string;
+  pais?: string;
+  bairro?: string;
+  quarto?: number;
+  banheiro?: number;
+  garagem?: number;
+  suite?: number;
+  areaTotal?: number;
+  areaConstruida?: number;
+  areaPrivativa?: number;
+}
+
+export interface Anuncio {
+  id: number;
+  descricao: string;
+  ativo: boolean;
+  dataInicio?: string;
+  imovel: Imovel;
+  tipoAnuncio?: TipoAnuncio;
+  anunciante?: User;
+}
+
+export interface TipoAnuncio {
+  id: number;
+  categoria: string; // B = Bronze, P = Prata, O = Ouro
+  valor: number;
+  duracaoDia: number;
 }
 
 export interface Category {
@@ -49,6 +92,7 @@ export interface PropertyCardProps {
   property: Property;
   isFavorite: boolean;
   onToggleFavorite: (id: number) => void;
+  onViewDetails?: (id: number) => void;
 }
 
 export interface HeaderProps {
@@ -113,4 +157,4 @@ export interface RegisterFormData {
   confirmarSenha: string;
 }
 
-export type PageType = 'home' | 'login' | 'register' | 'forgot-password' | 'my-ads' | 'profile';
+export type PageType = 'home' | 'login' | 'register' | 'forgot-password' | 'my-ads' | 'profile' | 'new-ad' | 'detail';
