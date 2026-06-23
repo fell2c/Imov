@@ -6,7 +6,7 @@ import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import type { Anuncio, PageType, TipoAnuncio } from '../types/Index';
 import { useAuth } from '../contexts/AuthContext';
-import { alterarAnuncio, criarAnuncio, getTiposAnuncio } from '../utils/anuncioService';
+import { alterarAnuncio, criarAnuncio, getTiposAnuncio, uploadImagens } from '../utils/anuncioService';
 
 interface NewAdPageProps {
   setCurrentPage: (page: PageType) => void;
@@ -29,6 +29,7 @@ export const NewAdPage: React.FC<NewAdPageProps> = ({ setCurrentPage }) => {
   // Edicao: anuncio recebido via sessionStorage (setado em "Meus Anuncios")
   const [editId, setEditId] = useState<number | null>(null);
   const [imovelId, setImovelId] = useState<number | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
 
   const hoje = new Date().toISOString().slice(0, 10);
 
@@ -154,9 +155,15 @@ export const NewAdPage: React.FC<NewAdPageProps> = ({ setCurrentPage }) => {
 
       if (editId != null) {
         await alterarAnuncio(payload);
+        if (files.length > 0 && imovelId != null) {
+          await uploadImagens(imovelId, files);
+        }
         alert('Anúncio atualizado com sucesso!');
       } else {
-        await criarAnuncio(payload);
+        const criado = await criarAnuncio(payload);
+        if (files.length > 0) {
+          await uploadImagens(criado.imovelId, files);
+        }
         alert('Anúncio criado com sucesso!');
       }
       setCurrentPage('my-ads');
@@ -299,6 +306,20 @@ export const NewAdPage: React.FC<NewAdPageProps> = ({ setCurrentPage }) => {
               <Input label="Banheiros" type="number" value={form.banheiro} onChange={(e) => setField('banheiro', e.target.value)} placeholder="1" />
               <Input label="Garagens" type="number" value={form.garagem} onChange={(e) => setField('garagem', e.target.value)} placeholder="1" />
               <Input label="Área total (m²)" type="number" value={form.areaTotal} onChange={(e) => setField('areaTotal', e.target.value)} placeholder="75" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Fotos do imóvel</label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => setFiles(e.target.files ? Array.from(e.target.files) : [])}
+                className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
+              />
+              {files.length > 0 && (
+                <p className="text-xs text-gray-500 mt-1">{files.length} arquivo(s) selecionado(s)</p>
+              )}
             </div>
           </section>
 

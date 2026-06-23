@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/enviar-codigo-recuperacao", "/alterar-senha", "/cadastrar-anunciante",  // Permite cadastro
                                 "/buscar-anuncios", "/buscar-anuncios/filtros", "/buscar-anuncio/**",  // Navegacao publica de anuncios
                                 "/buscar-tipos-anuncio",  // Tipos de anuncio (Bronze/Prata/Ouro)
+                                "/imagens/**",  // Arquivos de imagem dos imoveis (leitura publica)
                                 "/error").permitAll()
 
                         // Todas as outras rotas precisam de autenticação

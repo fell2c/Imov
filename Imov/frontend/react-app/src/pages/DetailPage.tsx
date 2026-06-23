@@ -3,7 +3,7 @@ import { ArrowLeft, MapPin, Bed, Bath, Square, Car, Tag, Phone, Mail, User } fro
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import type { Anuncio, PageType } from '../types/Index';
-import { getAnuncioById } from '../utils/anuncioService';
+import { getAnuncioById, imagemUrl } from '../utils/anuncioService';
 
 interface DetailPageProps {
   setCurrentPage: (page: PageType) => void;
@@ -63,10 +63,23 @@ export const DetailPage: React.FC<DetailPageProps> = ({ setCurrentPage }) => {
         ) : (
           <div className="space-y-6">
             <img
-              src={FALLBACK_IMAGE}
+              src={im.imagens && im.imagens.length > 0 ? imagemUrl(im.imagens[0].nomeArquivo) : FALLBACK_IMAGE}
               alt={anuncio.descricao}
               className="w-full h-72 sm:h-96 object-cover rounded-xl shadow"
             />
+
+            {im.imagens && im.imagens.length > 1 && (
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                {im.imagens.slice(1).map(img => (
+                  <img
+                    key={img.id}
+                    src={imagemUrl(img.nomeArquivo)}
+                    alt={anuncio.descricao}
+                    className="w-full h-24 object-cover rounded-lg shadow"
+                  />
+                ))}
+              </div>
+            )}
 
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
               <div>

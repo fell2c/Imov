@@ -28,6 +28,8 @@ public interface AnuncioCrud extends CrudRepository<Anuncio, Integer> {
             """)
     Anuncio findByIdWithRelations(@Param("id") Integer id);
 
+    boolean existsByImovel_IdAndAnunciante_Id(Integer imovelId, Integer anuncianteId);
+
     // @formatter:off
     @Query("""
             SELECT a FROM Anuncio a

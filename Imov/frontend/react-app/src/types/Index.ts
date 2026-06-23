@@ -13,9 +13,15 @@ export interface Property {
 
 // ----- DTOs vindos do backend -----
 
+export interface ImovelImagem {
+  id: number;
+  nomeArquivo: string;
+}
+
 export interface Imovel {
   id: number;
   descricao: string;
+  imagens?: ImovelImagem[];
   tipoImovel: string;   // C = Casa, A = Apartamento, L = Lote
   tipoNegocio: string;  // A = Aluguel, V = Venda, T = Troca
   valor: number;

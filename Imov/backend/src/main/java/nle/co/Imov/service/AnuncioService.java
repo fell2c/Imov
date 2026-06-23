@@ -39,6 +39,10 @@ public class AnuncioService {
         this.anuncioCrud.deleteById(id);
     }
 
+    public boolean imovelPertenceAoAnunciante(Integer imovelId, Integer anuncianteId) {
+        return this.anuncioCrud.existsByImovel_IdAndAnunciante_Id(imovelId, anuncianteId);
+    }
+
     public List<Anuncio> getAnunciosComFiltros(Boolean ativo, String descricao, Integer idAnunciante, String tipoImovel, String tipoNegocio, String tipoLocalizacao, String cidade, String uf, BigDecimal valorMin, BigDecimal valorMax, Integer quartos, Integer banheiros, Integer garagens, String categoriaAnuncio, LocalDate dataInicioMin, LocalDate dataFimMax) {
         return this.anuncioCrud.buscarComFiltros(ativo, descricao, idAnunciante, tipoImovel, tipoNegocio, tipoLocalizacao, cidade, uf, valorMin, valorMax, quartos, banheiros, garagens, categoriaAnuncio, dataInicioMin, dataFimMax);
     }
